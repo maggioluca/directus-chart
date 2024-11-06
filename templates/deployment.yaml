@@ -1,61 +1,48 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "directus-chart.fullname" . }}
+  name: {{ .Release.Name }}-directus
   labels:
-    {{- include "directus-chart.labels" . | nindent 4 }}
+    app: {{ .Release.Name }}-directus
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
+  replicas: {{ .Values.replicaCount | default 1 }}
   selector:
     matchLabels:
-      {{- include "directus-chart.selectorLabels" . | nindent 6 }}
+      app: {{ .Release.Name }}-directus
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "directus-chart.selectorLabels" . | nindent 8 }}
+        app: {{ .Release.Name }}-directus
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "directus-chart.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: directus
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+          env:
+            {{- if .Values.envFrom.configMapRef }}
+            - configMapRef:
+                name: {{ .Values.envFrom.configMapRef.name }}
+            {{- end }}
+            {{- if .Values.envFrom.secretRef }}
+            - secretRef:
+                name: {{ .Values.envFrom.secretRef.name }}
+            {{- end }}
+            {{- if .Values.envFrom.configMapObjectStorageRef }}
+            - configMapRef:
+                name: {{ .Values.envFrom.configMapObjectStorageRef.name }}
+            {{- end }}
+            {{- if .Values.envFrom.configMapDatabaseRef }}
+            - configMapRef:
+                name: {{ .Values.envFrom.configMapDatabaseRef.name }}
+            {{- end }}
           ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
+            - containerPort: {{ .Values.service.port | default 8055 }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+            requests:
+              memory: {{ .Values.resources.requests.memory | default "256Mi" }}
+              cpu: {{ .Values.resources.requests.cpu | default "250m" }}
+            limits:
+              memory: {{ .Values.resources.limits.memory | default "512Mi" }}
+              cpu: {{ .Values.resources.limits.cpu | default "500m" }}
