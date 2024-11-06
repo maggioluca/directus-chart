@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,23 +18,11 @@ spec:
         - name: directus
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
-          env:
-            {{- if .Values.envFrom.configMapRef }}
+          envFrom:
             - configMapRef:
                 name: {{ .Values.envFrom.configMapRef.name }}
-            {{- end }}
-            {{- if .Values.envFrom.secretRef }}
             - secretRef:
                 name: {{ .Values.envFrom.secretRef.name }}
-            {{- end }}
-            {{- if .Values.envFrom.configMapObjectStorageRef }}
-            - configMapRef:
-                name: {{ .Values.envFrom.configMapObjectStorageRef.name }}
-            {{- end }}
-            {{- if .Values.envFrom.configMapDatabaseRef }}
-            - configMapRef:
-                name: {{ .Values.envFrom.configMapDatabaseRef.name }}
-            {{- end }}
           ports:
             - containerPort: {{ .Values.service.port | default 8055 }}
               protocol: TCP
