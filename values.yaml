@@ -28,6 +28,8 @@ resources:
     memory: "512Mi"
     cpu: "500m"
 
+adminEmail: "john.doe@example.xyz"
+
 configMap:
   accessTokenTTL: "7d"
   logStyle: "raw"
