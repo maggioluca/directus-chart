@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: directus-configuration
+data:
+  ACCESS_TOKEN_TTL: "{{ .Values.configMap.accessTokenTTL }}"
+  LOG_STYLE: "{{ .Values.configMap.logStyle }}"
+  CACHE_ENABLED: "{{ .Values.configMap.cacheEnabled }}"
+  CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_ANCESTORS: "{{ .Values.configMap.contentSecurityPolicyFrameAncestors }}"
+  CORS_ENABLED: "{{ .Values.configMap.corsEnabled }}"
+  CORS_CREDENTIALS: "{{ .Values.configMap.corsCredentials }}"
+  CORS_ORIGIN: "{{ .Values.configMap.corsOrigin }}"
+  CORS_METHODS: "{{ .Values.configMap.corsMethods }}"
+  CORS_ALLOWED_HEADERS: "{{ .Values.configMap.corsAllowedHeaders }}"
+  FILES_MAX_UPLOAD_SIZE: "{{ .Values.configMap.filesMaxUploadSize }}"
+  {{- if .Values.configMap.publicUrl }}
+  PUBLIC_URL: "{{ .Values.configMap.publicUrl }}"
+  {{- end }}
+  {{- if .Values.configMap.refreshTokenCookieDomain }}
+  REFRESH_TOKEN_COOKIE_DOMAIN: "{{ .Values.configMap.refreshTokenCookieDomain }}"
+  {{- end }}
+  {{- if .Values.configMap.refreshTokenCookieSecure }}
+  REFRESH_TOKEN_COOKIE_SECURE: "{{ .Values.configMap.refreshTokenCookieSecure }}"
+  {{- end }}

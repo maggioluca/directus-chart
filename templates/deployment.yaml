@@ -20,9 +20,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.envFrom.configMapRef.name }}
+                name: {{ default "directus-configuration" }}
             - secretRef:
-                name: {{ .Values.envFrom.secretRef.name }}
+                name: {{ default "directus-secret" }}
           ports:
             - containerPort: {{ .Values.service.port | default 8055 }}
               protocol: TCP

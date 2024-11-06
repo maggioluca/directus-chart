@@ -27,3 +27,18 @@ resources:
   limits:
     memory: "512Mi"
     cpu: "500m"
+
+configMap:
+  accessTokenTTL: "7d"
+  logStyle: "raw"
+  cacheEnabled: "false"
+  contentSecurityPolicyFrameAncestors: "'self' *.localhost"
+  corsEnabled: "true"
+  corsCredentials: "true"
+  corsOrigin: "http://localhost:4200"
+  corsMethods: "*"
+  corsAllowedHeaders: "Content-Type,Authorization,Credentials"
+  filesMaxUploadSize: "50mb"
+  publicUrl: "https://example.public"
+  refreshTokenCookieDomain: ".public"
+  refreshTokenCookieSecure: "true"
